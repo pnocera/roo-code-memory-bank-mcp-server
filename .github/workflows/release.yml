@@ -116,13 +116,7 @@ jobs:
             exit 1
           fi
           
-          # Create .npmrc file for authentication
-          echo "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}" > ~/.npmrc
-          
-          # Verify authentication
-          npm whoami
-          
-          # Publish to NPM
+          # Publish to NPM (authentication handled by setup-node action)
           npm publish --access public
 
       - name: Upload build artifacts
