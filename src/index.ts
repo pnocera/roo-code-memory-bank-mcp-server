@@ -198,7 +198,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
   const toolName = request.params.name;
   const args = request.params.arguments;
 
-  console.error(chalk.blue(`Received call for tool: ${toolName}`));
+  console.log(chalk.blue(`Received call for tool: ${toolName}`));
 
   switch (toolName) {
     case "initialize_memory_bank":
