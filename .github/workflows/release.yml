@@ -109,6 +109,19 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
+          # Verify token is set
+          if [ -z "$NODE_AUTH_TOKEN" ]; then
+            echo "Error: NPM_TOKEN is not set in repository secrets"
+            echo "Please add NPM_TOKEN to your repository secrets with a valid NPM automation token"
+            exit 1
+          fi
+          
+          # Create .npmrc file for authentication
+          echo "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}" > ~/.npmrc
+          
+          # Verify authentication
+          npm whoami
+          
           # Publish to NPM
           npm publish --access public
 
