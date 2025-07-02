@@ -1,6 +1,6 @@
 {
   "name": "roo-memorybank-mcp",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "MCP server for Roo Code Memory Bank functionality",
   "type": "module",
   "main": "dist/index.js",
