@@ -45,11 +45,14 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup Node.js
+      - name: Setup Node.js for NPM publishing
         uses: actions/setup-node@v4
         with:
           node-version: '18'
           cache: 'npm'
+          registry-url: 'https://registry.npmjs.org'
+          # This is the recommended way for NPM publishing
+          token: ${{ secrets.NPM_TOKEN }}
 
       - name: Install dependencies
         run: npm ci
@@ -104,29 +107,31 @@ jobs:
           draft: false
           prerelease: false
 
-      - name: Setup NPM Authentication
+      - name: Debug NPM Configuration
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
-          # Verify token is set
-          if [ -z "${{ secrets.NPM_TOKEN }}" ]; then
-            echo "Error: NPM_TOKEN is not set in repository secrets"
-            echo "Please add NPM_TOKEN to your repository secrets with a valid NPM automation token"
-            exit 1
-          fi
+          echo "Debugging NPM configuration..."
+          echo "Registry: $(npm config get registry)"
+          echo "Token length: ${#NODE_AUTH_TOKEN}"
+          echo "Token prefix: ${NODE_AUTH_TOKEN:0:8}..."
           
-          # Create .npmrc file for authentication
-          echo "registry=https://registry.npmjs.org/" > .npmrc
-          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" >> .npmrc
-          
-          # Debug: Show npm config (without showing the token)
-          echo "NPM Registry Configuration:"
-          npm config get registry
-          echo "NPM User:"
-          npm whoami || echo "Could not determine NPM user (this might be OK)"
+          # Check if we can authenticate
+          echo "Testing NPM authentication..."
+          npm whoami || echo "NPM whoami failed - this might indicate an authentication issue"
 
       - name: Publish to NPM
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           echo "Publishing roo-memorybank-mcp@${{ steps.version.outputs.clean_version }} to NPM..."
-          npm publish --access public
+          
+          # Alternative method: set npm token via npm config
+          npm config set //registry.npmjs.org/:_authToken ${{ secrets.NPM_TOKEN }}
+          
+          # Publish with verbose output for debugging
+          npm publish --access public --verbose
+          
           echo "Successfully published to NPM!"
 
       - name: Upload build artifacts
