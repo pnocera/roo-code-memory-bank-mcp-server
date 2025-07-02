@@ -1,21 +1,61 @@
 # Roo Code Memory Bank MCP Server
 
-This project implements the core functionality of the [Roo Code Memory Bank](https://github.com/GreatScottyMac/roo-code-memory-bank) system as a Model Context Protocol (MCP) server. It allows AI assistants to maintain project context across sessions by interacting with a file-based memory bank using structured MCP tools.
+This project implements the core functionality of the [Roo Code Memory Bank](https://github.com/GreatScottyMac/roo-code-memory-bank) system as a Model Context Protocol (MCP) server. It allows AI assistants to maintain project context across sessions by interacting with a **SQLite database** using structured MCP tools. All database operations are encapsulated within the `src/database.ts` module.
+
+## Storage Architecture
+
+The server uses a SQLite database (`db/memory-bank.db`) to store all project context. This provides a more robust and scalable solution compared to the previous file-based system.
+
+### Database Schema
+
+The database consists of three main tables:
+
+*   **`documents`**: Stores the main context files (e.g., `productContext.md`).
+    ```sql
+    CREATE TABLE documents (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL UNIQUE,
+        createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+    ```
+*   **`sections`**: Represents markdown headers within a document, allowing entries to be organized.
+    ```sql
+    CREATE TABLE sections (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        document_id INTEGER NOT NULL,
+        title TEXT NOT NULL,
+        createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (document_id) REFERENCES documents(id)
+    );
+    ```
+*   **`entries`**: Stores the individual, timestamped pieces of content.
+    ```sql
+    CREATE TABLE entries (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        section_id INTEGER NOT NULL,
+        content TEXT NOT NULL,
+        createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (section_id) REFERENCES sections(id)
+    );
+    ```
 
 ## Features
 
 This MCP server provides the following tools:
 
-*   **`initialize_memory_bank`**: Creates the `memory-bank/` directory and standard `.md` files (`productContext.md`, `activeContext.md`, `progress.md`, `decisionLog.md`, `systemPatterns.md`) with initial templates.
+*   **`initialize_memory_bank`**: Creates the initial database schema and pre-populates it with standard documents (`productContext.md`, `activeContext.md`, etc.).
     *   *Input*: (Optional) `{ "project_brief_content": string }`
     *   *Output*: `{ "status": "success" | "error", "messages"?: string[], "message"?: string }`
-*   **`check_memory_bank_status`**: Checks if the `memory-bank/` directory exists and lists the `.md` files within it.
+*   **`check_memory_bank_status`**: Checks if the `db/memory-bank.db` file exists and lists the documents within it.
     *   *Input*: `{}`
     *   *Output*: `{ "exists": boolean, "files": string[] }`
-*   **`read_memory_bank_file`**: Reads the full content of a specified memory bank file.
+*   **`read_memory_bank_file`**: Reads the full, aggregated content of a specified document from the database.
     *   *Input*: `{ "file_name": string }`
     *   *Output*: `{ "content": string }` or error object.
-*   **`append_memory_bank_entry`**: Appends a new, timestamped entry to a specified file, optionally under a specific markdown header. Creates the file if it doesn't exist.
+*   **`append_memory_bank_entry`**: Appends a new, timestamped entry to a specified document, optionally under a specific markdown header.
     *   *Input*: `{ "file_name": string, "entry": string, "section_header"?: string }`
     *   *Output*: `{ "status": "success" | "error", "message": string }`
 
@@ -117,10 +157,10 @@ The AI assistant interacts with the server using the defined tools. The typical 
 
 1.  Checking the memory bank status (`check_memory_bank_status`).
 2.  Initializing if needed (`initialize_memory_bank`).
-3.  Reading relevant files (`read_memory_bank_file`) to gain context.
+3.  Reading relevant documents (`read_memory_bank_file`) to gain context.
 4.  Appending entries (`append_memory_bank_entry`) as decisions are made or progress occurs.
 
-The `memory-bank/` directory will be created in the current working directory where the server process is started.
+The `db/` directory containing the `memory-bank.db` file will be created in the current working directory where the server process is started.
 
 ## Development and Deployment
 

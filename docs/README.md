@@ -16,43 +16,35 @@ This directory contains comprehensive documentation for the Roo Code Memory Bank
 - [📝 CHANGELOG](../CHANGELOG.md) - Version history and changes
 - [🛠️ Package Configuration](../package.json) - NPM package settings
 
-## 🔄 Automated Deployment Overview
-
-This project features a complete automated deployment pipeline that:
-
-### ✅ Continuous Integration (CI)
-- **Automated Testing**: Runs on every pull request and push
-- **Multi-Node Testing**: Tests on Node.js 18 and 20
-- **Security Auditing**: Checks for vulnerabilities
-- **Build Validation**: Ensures package can be built and packed
-
-### 🚀 Continuous Deployment (CD)
-- **GitHub Releases**: Automatically created from git tags
-- **NPM Publishing**: Packages published to NPM registry
-- **Artifact Management**: Build artifacts attached to releases
-- **Changelog Integration**: Release notes generated from CHANGELOG.md
-
-### 🔧 Workflow Triggers
-- **Tag Push**: `git tag v1.0.0 && git push origin v1.0.0`
-- **Manual Trigger**: Through GitHub Actions UI
-- **Pull Request**: CI testing on all PRs
-
 ## 🏗️ Architecture
 
+The server's architecture is centered around a **SQLite database** managed by the `src/database.ts` module. All MCP tools interact with this database to provide persistent storage for the AI assistant's context. The deployment and CI/CD pipeline is managed through GitHub Actions.
+
 ```mermaid
-graph LR
-    A[Developer] --> B[Git Commit]
-    B --> C[Push Tag]
-    C --> D[GitHub Actions]
-    D --> E[Run Tests]
-    E --> F[Build Project]
-    F --> G[Create Release]
-    G --> H[Publish NPM]
-    H --> I[Upload Artifacts]
+graph TD
+    subgraph "MCP Client (e.g., Cline)"
+        A[AI Assistant]
+    end
+
+    subgraph "Roo Memory Bank MCP Server"
+        B[src/index.ts]
+        C[src/database.ts]
+        D[(db/memory-bank.db)]
+    end
     
-    J[Pull Request] --> K[CI Tests]
-    K --> L[Build Check]
-    L --> M[Security Audit]
+    subgraph "Deployment Pipeline"
+        E[GitHub Actions]
+        F[NPM Registry]
+        G[GitHub Releases]
+    end
+
+    A -- MCP Tool Call --> B
+    B -- Calls Functions --> C
+    C -- Interacts with --> D
+    
+    H[Developer] -- Pushes Git Tag --> E
+    E -- Publishes --> F
+    E -- Creates --> G
 ```
 
 ## 📋 Setup Checklist

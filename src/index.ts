@@ -8,90 +8,65 @@ import {
   Tool,
 } from "@modelcontextprotocol/sdk/types.js";
 import chalk from 'chalk';
-import fs from 'fs/promises'; // Use promises for async operations
+import {
+    appendEntry,
+    createDocument,
+    getDocumentContent,
+    listDocuments,
+} from "./database.js";
+import fs from 'fs';
 import path from 'path';
-// import { fileURLToPath } from 'url'; // Removed import.meta.url usage
 
-// --- Constants ---
-const MEMORY_BANK_DIR_NAME = "memory-bank";
-// Use process.cwd() which should be the project root when the server is run
-const BASE_PATH = process.cwd();
-const MEMORY_BANK_PATH = path.join(BASE_PATH, MEMORY_BANK_DIR_NAME);
-
-const INITIAL_FILES: { [key: string]: string } = {
-  "productContext.md": `# Product Context\n\nThis file provides a high-level overview...\n\n*`,
-  "activeContext.md": `# Active Context\n\nThis file tracks the project's current status...\n\n*`,
-  "progress.md": `# Progress\n\nThis file tracks the project's progress...\n\n*`,
-  "decisionLog.md": `# Decision Log\n\nThis file records architectural and implementation decisions...\n\n*`,
-  "systemPatterns.md": `# System Patterns *Optional*\n\nThis file documents recurring patterns...\n\n*`
-};
-
-// --- Helper Functions ---
-
-function getCurrentTimestamp(): string {
-  return new Date().toISOString().replace('T', ' ').substring(0, 19);
-}
-
-async function ensureMemoryBankDir(): Promise<void> {
-  try {
-    await fs.access(MEMORY_BANK_PATH);
-  } catch (error) {
-    // Directory doesn't exist, create it
-    await fs.mkdir(MEMORY_BANK_PATH, { recursive: true });
-    console.error(chalk.green(`Created memory bank directory: ${MEMORY_BANK_PATH}`));
-  }
-}
+const DB_DIR = path.join(process.cwd(), 'db');
+const DB_PATH = path.join(DB_DIR, 'memory-bank.db');
 
 // --- Tool Definitions ---
 
 const INITIALIZE_MEMORY_BANK_TOOL: Tool = {
   name: "initialize_memory_bank",
-  description: "Creates the memory-bank directory and standard .md files with initial templates.",
+  description: "Initializes the SQLite database and schema. No-op if already initialized.",
   inputSchema: {
     type: "object",
     properties: {
-      project_brief_content: {
-        type: "string",
-        description: "(Optional) Content from projectBrief.md to pre-fill productContext.md"
-      }
+        project_brief_content: {
+            type: "string",
+            description: "(Optional) Content from projectBrief.md to pre-fill productContext.md"
+        }
     },
     required: []
   }
-  // Output: Confirmation message (handled in implementation)
 };
 
 const CHECK_MEMORY_BANK_STATUS_TOOL: Tool = {
   name: "check_memory_bank_status",
-  description: "Checks if the memory-bank directory exists and lists the .md files within it.",
-  inputSchema: { type: "object", properties: {} } // No input needed
-  // Output: { exists: boolean, files: string[] } (handled in implementation)
+  description: "Checks if the database exists and lists the documents within it.",
+  inputSchema: { type: "object", properties: {} }
 };
 
 const READ_MEMORY_BANK_FILE_TOOL: Tool = {
   name: "read_memory_bank_file",
-  description: "Reads the full content of a specified memory bank file.",
+  description: "Reads the full content of a specified document from the database.",
   inputSchema: {
     type: "object",
     properties: {
       file_name: {
         type: "string",
-        description: "The name of the memory bank file (e.g., 'productContext.md')"
+        description: "The name of the document (e.g., 'productContext.md')"
       }
     },
     required: ["file_name"]
   }
-  // Output: { content: string } (handled in implementation)
 };
 
 const APPEND_MEMORY_BANK_ENTRY_TOOL: Tool = {
   name: "append_memory_bank_entry",
-  description: "Appends a new, timestamped entry to a specified file, optionally under a specific markdown header.",
+  description: "Appends a new, timestamped entry to a specified document, optionally under a specific header.",
   inputSchema: {
     type: "object",
     properties: {
       file_name: {
         type: "string",
-        description: "The name of the memory bank file to append to."
+        description: "The name of the document to append to."
       },
       entry: {
         type: "string",
@@ -104,7 +79,6 @@ const APPEND_MEMORY_BANK_ENTRY_TOOL: Tool = {
     },
     required: ["file_name", "entry"]
   }
-  // Output: Confirmation message (handled in implementation)
 };
 
 const ALL_TOOLS = [
@@ -120,30 +94,27 @@ class RooMemoryBankServer {
 
   async initializeMemoryBank(input: any): Promise<{ content: Array<{ type: string; text: string }>; isError?: boolean }> {
     try {
-      await ensureMemoryBankDir();
-      let initializationMessages: string[] = [];
-
-      for (const [fileName, template] of Object.entries(INITIAL_FILES)) {
-        const filePath = path.join(MEMORY_BANK_PATH, fileName);
-        try {
-          await fs.access(filePath);
-          initializationMessages.push(`File ${fileName} already exists.`);
-        } catch {
-          // File doesn't exist, create it
-          let content = template;
-          // Add timestamp to initial content
-          content = content.replace('YYYY-MM-DD HH:MM:SS', getCurrentTimestamp());
-
-          // Special handling for project brief in productContext.md
-          if (fileName === "productContext.md" && input?.project_brief_content) {
-             content = content.replace('...', `based on project brief:\n\n${input.project_brief_content}\n\n...`);
+      // The database is initialized when database.ts is imported.
+      // We can create the initial documents here.
+      const initialDocs = ["productContext.md", "activeContext.md", "progress.md", "decisionLog.md", "systemPatterns.md"];
+      let messages: string[] = [];
+      for (const doc of initialDocs) {
+          try {
+            createDocument(doc);
+            messages.push(`Created document: ${doc}`);
+          } catch (error: any) {
+            if (error.code === 'SQLITE_CONSTRAINT_UNIQUE') {
+                messages.push(`Document ${doc} already exists.`);
+            } else {
+                throw error;
+            }
           }
-
-          await fs.writeFile(filePath, content);
-          initializationMessages.push(`Created file: ${fileName}`);
-        }
       }
-      return { content: [{ type: "text", text: JSON.stringify({ status: "success", messages: initializationMessages }, null, 2) }] };
+      if (input?.project_brief_content) {
+        appendEntry("productContext.md", "# Product Context", `Based on project brief:\n\n${input.project_brief_content}`);
+        messages.push("Added project brief to productContext.md");
+      }
+      return { content: [{ type: "text", text: JSON.stringify({ status: "success", messages }, null, 2) }] };
     } catch (error: any) {
       console.error(chalk.red("Error initializing memory bank:"), error);
       return { content: [{ type: "text", text: JSON.stringify({ status: "error", message: error.message }, null, 2) }], isError: true };
@@ -152,13 +123,15 @@ class RooMemoryBankServer {
 
   async checkMemoryBankStatus(): Promise<{ content: Array<{ type: string; text: string }>; isError?: boolean }> {
      try {
-        await fs.access(MEMORY_BANK_PATH);
-        const files = await fs.readdir(MEMORY_BANK_PATH);
-        const mdFiles = files.filter(f => f.endsWith('.md'));
-        return { content: [{ type: "text", text: JSON.stringify({ exists: true, files: mdFiles }, null, 2) }] };
-     } catch (error) {
-        // If access fails, directory likely doesn't exist
-        return { content: [{ type: "text", text: JSON.stringify({ exists: false, files: [] }, null, 2) }] };
+        const dbExists = fs.existsSync(DB_PATH);
+        if (dbExists) {
+            const docs = listDocuments();
+            return { content: [{ type: "text", text: JSON.stringify({ exists: true, files: docs }, null, 2) }] };
+        } else {
+            return { content: [{ type: "text", text: JSON.stringify({ exists: false, files: [] }, null, 2) }] };
+        }
+     } catch (error: any) {
+        return { content: [{ type: "text", text: JSON.stringify({ exists: false, files: [], error: error.message }, null, 2) }] };
      }
   }
 
@@ -167,13 +140,15 @@ class RooMemoryBankServer {
     if (!fileName || typeof fileName !== 'string') {
       return { content: [{ type: "text", text: JSON.stringify({ status: "error", message: "Missing or invalid 'file_name' parameter." }, null, 2) }], isError: true };
     }
-    const filePath = path.join(MEMORY_BANK_PATH, fileName);
     try {
-      const fileContent = await fs.readFile(filePath, 'utf-8');
+      const fileContent = getDocumentContent(fileName);
+      if (fileContent === null) {
+        return { content: [{ type: "text", text: JSON.stringify({ status: "error", message: `Document not found: ${fileName}` }, null, 2) }], isError: true };
+      }
       return { content: [{ type: "text", text: JSON.stringify({ content: fileContent }, null, 2) }] };
     } catch (error: any) {
-      console.error(chalk.red(`Error reading file ${fileName}:`), error);
-      return { content: [{ type: "text", text: JSON.stringify({ status: "error", message: `Failed to read file ${fileName}: ${error.message}` }, null, 2) }], isError: true };
+      console.error(chalk.red(`Error reading document ${fileName}:`), error);
+      return { content: [{ type: "text", text: JSON.stringify({ status: "error", message: `Failed to read document ${fileName}: ${error.message}` }, null, 2) }], isError: true };
     }
   }
 
@@ -187,50 +162,13 @@ class RooMemoryBankServer {
        return { content: [{ type: "text", text: JSON.stringify({ status: "error", message: "Missing or invalid 'entry' parameter." }, null, 2) }], isError: true };
      }
 
-     const filePath = path.join(MEMORY_BANK_PATH, fileName);
-     const timestamp = getCurrentTimestamp();
-     const formattedEntry = `\n[${timestamp}] - ${entry}\n`;
-
      try {
-       await ensureMemoryBankDir(); // Ensure directory exists before appending
-
-       if (sectionHeader && typeof sectionHeader === 'string') {
-         let fileContent = "";
-         try {
-            fileContent = await fs.readFile(filePath, 'utf-8');
-         } catch (readError: any) {
-             if (readError.code === 'ENOENT') { // File doesn't exist, create it
-                 console.warn(chalk.yellow(`File ${fileName} not found, creating.`));
-                 // Use initial template if available, otherwise just the header and entry
-                 const initialTemplate = INITIAL_FILES[fileName] ? INITIAL_FILES[fileName].replace('YYYY-MM-DD HH:MM:SS', timestamp) : '';
-                 fileContent = initialTemplate;
-             } else {
-                 throw readError; // Re-throw other read errors
-             }
-         }
-
-
-         const headerIndex = fileContent.indexOf(sectionHeader);
-         if (headerIndex !== -1) {
-           // Find the end of the section (next header or end of file)
-           const nextHeaderIndex = fileContent.indexOf('\n##', headerIndex + sectionHeader.length);
-           const insertIndex = (nextHeaderIndex !== -1) ? nextHeaderIndex : fileContent.length;
-           const updatedContent = fileContent.slice(0, insertIndex).trimEnd() + '\n' + formattedEntry.trimStart() + fileContent.slice(insertIndex);
-           await fs.writeFile(filePath, updatedContent);
-         } else {
-           // Header not found, append to the end with the header
-           console.warn(chalk.yellow(`Header "${sectionHeader}" not found in ${fileName}. Appending header and entry to the end.`));
-           await fs.appendFile(filePath, `\n${sectionHeader}\n${formattedEntry}`);
-         }
-       } else {
-         // No section header, just append to the end
-         await fs.appendFile(filePath, formattedEntry);
-       }
-
+       const header = sectionHeader || '## General';
+       appendEntry(fileName, header, entry);
        return { content: [{ type: "text", text: JSON.stringify({ status: "success", message: `Appended entry to ${fileName}` }, null, 2) }] };
      } catch (error: any) {
-       console.error(chalk.red(`Error appending to file ${fileName}:`), error);
-       return { content: [{ type: "text", text: JSON.stringify({ status: "error", message: `Failed to append to file ${fileName}: ${error.message}` }, null, 2) }], isError: true };
+       console.error(chalk.red(`Error appending to document ${fileName}:`), error);
+       return { content: [{ type: "text", text: JSON.stringify({ status: "error", message: `Failed to append to document ${fileName}: ${error.message}` }, null, 2) }], isError: true };
      }
    }
 }
@@ -239,12 +177,12 @@ class RooMemoryBankServer {
 // --- Server Setup ---
 const server = new Server(
   {
-    name: "roo-memory-bank-mcp-server",
-    version: "0.1.0", // Initial version
+    name: "roo-memorybank-mcp",
+    version: "1.1.0",
   },
   {
     capabilities: {
-      tools: {}, // Tools are dynamically listed
+      tools: {},
     },
   }
 );
@@ -260,7 +198,6 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
   const args = request.params.arguments;
 
   console.error(chalk.blue(`Received call for tool: ${toolName}`));
-  // console.error(chalk.gray(`Arguments: ${JSON.stringify(args)}`)); // Optional: Log arguments
 
   switch (toolName) {
     case "initialize_memory_bank":

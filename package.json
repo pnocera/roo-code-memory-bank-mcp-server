@@ -1,6 +1,6 @@
 {
   "name": "roo-memorybank-mcp",
-  "version": "1.0.9",
+  "version": "1.0.11",
   "description": "MCP server for Roo Code Memory Bank functionality",
   "type": "module",
   "main": "dist/index.js",
@@ -40,10 +40,12 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.13.3",
+    "better-sqlite3": "^11.1.2",
     "chalk": "^5.4.1",
     "yargs": "^18.0.0"
   },
   "devDependencies": {
+    "@types/better-sqlite3": "^7.6.11",
     "@types/node": "^22.15.3",
     "@types/yargs": "^17.0.33",
     "shx": "^0.3.4",
