@@ -16,6 +16,7 @@ import {
 } from "./database.js";
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
 
 const DB_DIR = path.join(process.cwd(), 'db');
 const DB_PATH = path.join(DB_DIR, 'memory-bank.db');
@@ -90,7 +91,7 @@ const ALL_TOOLS = [
 
 // --- Server Logic ---
 
-class RooMemoryBankServer {
+export class RooMemoryBankServer {
 
   async initializeMemoryBank(input: any): Promise<{ content: Array<{ type: string; text: string }>; isError?: boolean }> {
     try {
@@ -223,7 +224,9 @@ async function runServer() {
   console.error(chalk.green("Roo Memory Bank MCP Server running on stdio"));
 }
 
-runServer().catch((error) => {
-  console.error(chalk.red("Fatal error running server:"), error);
-  process.exit(1);
-});
+if (import.meta.url.startsWith('file:') && fileURLToPath(import.meta.url) === process.argv[1]) {
+    runServer().catch((error) => {
+        console.error(chalk.red("Fatal error running server:"), error);
+        process.exit(1);
+    });
+}

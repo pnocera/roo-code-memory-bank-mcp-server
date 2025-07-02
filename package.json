@@ -1,6 +1,6 @@
 {
   "name": "roo-memorybank-mcp",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "description": "MCP server for Roo Code Memory Bank functionality",
   "type": "module",
   "main": "dist/index.js",
@@ -15,7 +15,7 @@
     "start": "node dist/index.js",
     "watch": "tsc --watch",
     "prepare": "npm run build",
-    "test": "echo \"Warning: No tests configured yet. Please add tests for better CI/CD.\" && exit 0",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --detectOpenHandles",
     "lint": "echo \"Warning: No linting configured yet. Consider adding ESLint.\" && exit 0",
     "clean": "shx rm -rf dist",
     "prepack": "npm run clean && npm run build"
@@ -46,9 +46,12 @@
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.11",
+    "@types/jest": "^30.0.0",
     "@types/node": "^22.15.3",
     "@types/yargs": "^17.0.33",
+    "jest": "^30.0.3",
     "shx": "^0.3.4",
+    "ts-jest": "^29.4.0",
     "typescript": "^5.8.3"
   }
 }

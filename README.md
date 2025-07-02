@@ -221,7 +221,7 @@ Use openrouter search to find general sentiment of topics, reviews, etc.
 *   At the start of a task or significant subtask, use `check_memory_bank_status`.
 *   If the memory bank exists (`exists: true`), use `read_memory_bank_file` for relevant files (e.g., `productContext.md`, `activeContext.md`) to load the current project context.
 *   Incorporate this loaded context into your planning and execution.
-*   When making significant decisions, progress updates, or architectural changes, use `append_memory_bank_entry` to record the information in the appropriate file (`decisionLog.md`, `progress.md`, etc.), ensuring context persistence.
+*   When making significant decisions, progress updates, or architectural changes, use `append_memory_bank_entry` to record the information ensuring context persistence.
 *   If the memory bank doesn't exist, consider using `initialize_memory_bank` if appropriate for the project.
 
 ## Contributing
