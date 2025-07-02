@@ -22,21 +22,70 @@ This MCP server provides the following tools:
 ## Prerequisites
 
 *   Node.js (v18 or later recommended)
-*   npm (usually included with Node.js)
-*   An MCP client environment (like the one used by Cline) capable of managing and launching MCP servers.
+*   npm or bun package manager
+*   An MCP client environment (like Cline) capable of managing and launching MCP servers.
 
 ## Installation
 
-### Option 1: Install from NPM (Recommended)
+Simply add this MCP server to your client configuration - no installation required! The server will be automatically downloaded and run via npx/bunx.
 
-The easiest way to use this MCP server is to install it from NPM:
+### Configuration
+
+Add the following to your MCP client settings (e.g., `cline_mcp_settings.json`):
+
+#### Using npx (recommended for npm users)
+```json
+{
+  "mcpServers": {
+    "roo-code-memory-bank-mcp": {
+      "command": "npx",
+      "args": ["roo-mcp-server"],
+      "env": {},
+      "transportType": "stdio",
+      "autoApprove": [
+        "initialize_memory_bank",
+        "check_memory_bank_status",
+        "read_memory_bank_file",
+        "append_memory_bank_entry"
+      ],
+      "disabled": false,
+      "timeout": 60
+    }
+  }
+}
+```
+
+#### Using bunx (recommended for bun users)
+```json
+{
+  "mcpServers": {
+    "roo-code-memory-bank-mcp": {
+      "command": "bunx",
+      "args": ["roo-mcp-server"],
+      "env": {},
+      "transportType": "stdio",
+      "autoApprove": [
+        "initialize_memory_bank",
+        "check_memory_bank_status",
+        "read_memory_bank_file",
+        "append_memory_bank_entry"
+      ],
+      "disabled": false,
+      "timeout": 60
+    }
+  }
+}
+```
+
+### Alternative: Global Installation
+
+If you prefer to install globally first:
 
 ```bash
 npm install -g roo-mcp-server
 ```
 
-Then configure your MCP client to use the installed binary:
-
+Then use this simpler configuration:
 ```json
 {
   "mcpServers": {
@@ -58,73 +107,9 @@ Then configure your MCP client to use the installed binary:
 }
 ```
 
-### Option 2: Build from Source
-
-1.  **Clone the repository:**
-    ```bash
-    git clone https://github.com/IncomeStreamSurfer/roo-code-memory-bank-mcp-server.git
-    cd roo-code-memory-bank-mcp-server
-    ```
-2.  **Install dependencies:**
-    ```bash
-    npm install
-    ```
-3.  **Build the project:**
-    ```bash
-    npm run build
-    ```
-    This compiles the TypeScript code into JavaScript in the `dist/` directory.
-
-## Configuration (for Cline MCP Client)
-
-### When using NPM installation (Option 1 above)
-
-Use the simplified configuration shown in the installation section.
-
-### When building from source (Option 2 above)
-
-To make this server available to your AI assistant (like Cline), you need to add its configuration to your MCP settings file (e.g., `cline_mcp_settings.json`).
-
-Find the `mcpServers` object in your settings file and add the following entry:
-
-```json
-{
-  "mcpServers": {
-    // ... other server configurations ...
-
-    "roo-code-memory-bank-mcp": {
-      "autoApprove": [
-        "initialize_memory_bank",
-        "check_memory_bank_status",
-        "read_memory_bank_file",
-        "append_memory_bank_entry"
-      ],
-      "disabled": false,
-      "timeout": 60,
-      "command": "node", // Or "cmd.exe" with "/c node ..." on Windows if needed
-      "args": [
-        // IMPORTANT: Replace this path with the actual absolute path
-        // to the compiled index.js file on your system
-        "/path/to/your/cloned/repo/roo-code-memory-bank-mcp-server/dist/index.js"
-      ],
-      "env": {},
-      "transportType": "stdio"
-    }
-
-    // ... other server configurations ...
-  }
-}
-```
-
-**Important:** Replace `/path/to/your/cloned/repo/` with the correct absolute path to where you cloned the repository on your machine. Ensure the path separator is correct for your operating system (e.g., use backslashes `\` on Windows).
-
 ## Running the Server
 
-You don't typically need to run the server manually. The MCP client (like Cline) will automatically start the server using the `command` and `args` specified in the configuration file when one of its tools is called for the first time.
-
-If you want to test it manually, you can run:
-- For NPM installation: `roo-mcp-server`
-- For source build: `npm start` from the project directory
+You don't need to run the server manually. The MCP client (like Cline) will automatically start the server using npx/bunx when one of its tools is called for the first time. The package will be downloaded automatically on first use.
 
 ## Usage
 

@@ -4,13 +4,9 @@ This guide will help you get the Roo Code Memory Bank MCP Server running in just
 
 ## 🚀 Quick Start (Recommended)
 
-### Step 1: Install from NPM
+### Step 1: Configure Your MCP Client (No Installation Required!)
 
-```bash
-npm install -g roo-mcp-server
-```
-
-### Step 2: Configure Your MCP Client
+Simply add the server configuration to your MCP client - the package will be automatically downloaded and run via npx/bunx.
 
 #### For Cline (VS Code Extension)
 
@@ -19,12 +15,35 @@ npm install -g roo-mcp-server
 3. Find "MCP Server Settings" or open your `cline_mcp_settings.json`
 4. Add this configuration:
 
+**Using npx (recommended for npm users):**
 ```json
 {
   "mcpServers": {
     "roo-code-memory-bank-mcp": {
-      "command": "roo-mcp-server",
-      "args": [],
+      "command": "npx",
+      "args": ["roo-mcp-server"],
+      "env": {},
+      "transportType": "stdio",
+      "autoApprove": [
+        "initialize_memory_bank",
+        "check_memory_bank_status", 
+        "read_memory_bank_file",
+        "append_memory_bank_entry"
+      ],
+      "disabled": false,
+      "timeout": 60
+    }
+  }
+}
+```
+
+**Using bunx (recommended for bun users):**
+```json
+{
+  "mcpServers": {
+    "roo-code-memory-bank-mcp": {
+      "command": "bunx",
+      "args": ["roo-mcp-server"],
       "env": {},
       "transportType": "stdio",
       "autoApprove": [
@@ -44,9 +63,9 @@ npm install -g roo-mcp-server
 
 1. Open Claude Desktop settings
 2. Navigate to MCP servers configuration
-3. Add the same configuration as above
+3. Add the same configuration as above (choose npx or bunx based on your preference)
 
-### Step 3: Test the Installation
+### Step 2: Test the Installation
 
 1. Restart your MCP client (Cline/Claude Desktop)
 2. In a chat, ask your AI assistant to:
@@ -54,44 +73,35 @@ npm install -g roo-mcp-server
    Check the memory bank status and initialize it if needed
    ```
 3. The assistant should use the MCP tools and create a `memory-bank/` directory
+4. The package will be automatically downloaded on first use
 
-## 🔧 Advanced Setup (Build from Source)
+## 🔧 Alternative: Global Installation
+
+If you prefer to install globally first:
 
 ### Prerequisites
 
 - Node.js 18+ installed
-- Git installed
-- NPM or Yarn package manager
+- NPM or Bun package manager
 
-### Clone and Build
+### Install Globally
 
 ```bash
-# Clone the repository
-git clone https://github.com/IncomeStreamSurfer/roo-code-memory-bank-mcp-server.git
-cd roo-code-memory-bank-mcp-server
+# Using npm
+npm install -g roo-mcp-server
 
-# Install dependencies
-npm install
-
-# Build the project
-npm run build
-
-# Test that it works
-npm start
+# Using bun
+bun install -g roo-mcp-server
 ```
 
-### Configure with Absolute Path
-
-For source builds, you need to use the absolute path in your MCP configuration:
+### Configure with Direct Command
 
 ```json
 {
   "mcpServers": {
     "roo-code-memory-bank-mcp": {
-      "command": "node",
-      "args": [
-        "/absolute/path/to/roo-code-memory-bank-mcp-server/dist/index.js"
-      ],
+      "command": "roo-mcp-server",
+      "args": [],
       "env": {},
       "transportType": "stdio",
       "autoApprove": [
@@ -143,33 +153,39 @@ your-project/
 
 ## 🔍 Verification Checklist
 
-- [ ] MCP server installed successfully
-- [ ] MCP client configuration updated
+- [ ] MCP client configuration updated with npx/bunx command
 - [ ] MCP client restarted
 - [ ] Memory bank tools working in chat
+- [ ] Package automatically downloaded on first use
 - [ ] Memory bank directory created
 - [ ] Template files populated
 
 ## 🐛 Common Issues
 
-### Issue: "Command not found: roo-mcp-server"
-**Solution**: Ensure NPM global bin directory is in your PATH
+### Issue: "npx: command not found"
+**Solution**: Ensure Node.js and npm are properly installed
 ```bash
-npm config get prefix
-# Add <prefix>/bin to your PATH environment variable
+node --version
+npm --version
 ```
 
-### Issue: "Permission denied" on Unix systems
-**Solution**: Fix permissions for the executable
+### Issue: "bunx: command not found"
+**Solution**: Ensure Bun is properly installed
 ```bash
-chmod +x $(which roo-mcp-server)
+bun --version
 ```
+
+### Issue: Package download fails
+**Solution**: 
+1. Check internet connection
+2. Try with global installation instead
+3. Verify npm/bun registry access
 
 ### Issue: MCP client can't find the server
 **Solution**: 
 1. Verify the command path in your configuration
-2. Test the command manually in terminal
-3. Check MCP client logs for error details
+2. Check MCP client logs for error details
+3. Try restarting the MCP client
 
 ### Issue: Tools not appearing in AI assistant
 **Solution**:
@@ -182,8 +198,8 @@ chmod +x $(which roo-mcp-server)
 If you encounter issues:
 
 1. **Check the logs**: Most MCP clients show logs in their developer tools
-2. **Test manually**: Run `roo-mcp-server` in terminal to check for errors
-3. **Verify installation**: Run `npm list -g roo-mcp-server` to confirm installation
+2. **Test manually**: Run `npx roo-mcp-server` or `bunx roo-mcp-server` in terminal to check for errors
+3. **Verify package**: Check that the package exists at [npmjs.com/package/roo-mcp-server](https://www.npmjs.com/package/roo-mcp-server)
 4. **Open an issue**: [Report bugs here](https://github.com/IncomeStreamSurfer/roo-code-memory-bank-mcp-server/issues)
 
 ## 🎯 Next Steps
@@ -202,6 +218,7 @@ Once everything is working:
 - **Multiple projects**: Each project directory gets its own memory bank
 - **Backup**: Consider backing up your `memory-bank/` directories regularly
 - **Team usage**: Share memory bank files with your team for consistency
+- **Package caching**: npx/bunx will cache the package after first download for faster subsequent runs
 
 ---
 
