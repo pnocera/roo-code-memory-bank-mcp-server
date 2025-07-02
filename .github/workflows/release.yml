@@ -50,7 +50,6 @@ jobs:
         with:
           node-version: '18'
           cache: 'npm'
-          registry-url: 'https://registry.npmjs.org'
 
       - name: Install dependencies
         run: npm ci
@@ -105,19 +104,30 @@ jobs:
           draft: false
           prerelease: false
 
-      - name: Publish to NPM
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Setup NPM Authentication
         run: |
           # Verify token is set
-          if [ -z "$NODE_AUTH_TOKEN" ]; then
+          if [ -z "${{ secrets.NPM_TOKEN }}" ]; then
             echo "Error: NPM_TOKEN is not set in repository secrets"
             echo "Please add NPM_TOKEN to your repository secrets with a valid NPM automation token"
             exit 1
           fi
           
-          # Publish to NPM (authentication handled by setup-node action)
+          # Create .npmrc file for authentication
+          echo "registry=https://registry.npmjs.org/" > .npmrc
+          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" >> .npmrc
+          
+          # Debug: Show npm config (without showing the token)
+          echo "NPM Registry Configuration:"
+          npm config get registry
+          echo "NPM User:"
+          npm whoami || echo "Could not determine NPM user (this might be OK)"
+
+      - name: Publish to NPM
+        run: |
+          echo "Publishing roo-memorybank-mcp@${{ steps.version.outputs.clean_version }} to NPM..."
           npm publish --access public
+          echo "Successfully published to NPM!"
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
