@@ -1,6 +1,6 @@
 {
   "name": "roo-memorybank-mcp",
-  "version": "1.0.4",
+  "version": "1.0.6",
   "description": "MCP server for Roo Code Memory Bank functionality",
   "type": "module",
   "main": "dist/index.js",
@@ -30,18 +30,18 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/pnocera/roo-memorybank-mcp-server.git"
+    "url": "git+https://github.com/pnocera/roo-code-memory-bank-mcp-server.git"
   },
   "bugs": {
-    "url": "https://github.com/pnocera/roo-memorybank-mcp-server/issues"
+    "url": "https://github.com/pnocera/roo-code-memory-bank-mcp-server/issues"
   },
-  "homepage": "https://github.com/pnocera/roo-memorybank-mcp-server#readme",
+  "homepage": "https://github.com/pnocera/roo-code-memory-bank-mcp-server#readme",
   "author": "",
   "license": "Apache-2.0",
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^0.5.0",
+    "@modelcontextprotocol/sdk": "^1.13.3",
     "chalk": "^5.4.1",
-    "yargs": "^17.7.2"
+    "yargs": "^18.0.0"
   },
   "devDependencies": {
     "@types/node": "^22.15.3",
