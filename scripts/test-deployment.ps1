@@ -9,7 +9,7 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Continue"
 
-Write-Host "Testing @pnocera/roo-memorybank-mcp Deployment Setup" -ForegroundColor Cyan
+Write-Host "Testing roo-memorybank-mcp Deployment Setup" -ForegroundColor Cyan
 Write-Host "==========================================" -ForegroundColor Cyan
 
 # Functions for colored output

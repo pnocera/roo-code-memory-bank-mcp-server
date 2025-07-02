@@ -39,7 +39,7 @@ Add the following to your MCP client settings (e.g., `cline_mcp_settings.json`):
   "mcpServers": {
     "roo-memorybank-mcp": {
       "command": "npx",
-      "args": ["@pnocera/roo-memorybank-mcp"],
+      "args": ["roo-memorybank-mcp"],
       "env": {},
       "transportType": "stdio",
       "autoApprove": [
@@ -61,7 +61,7 @@ Add the following to your MCP client settings (e.g., `cline_mcp_settings.json`):
   "mcpServers": {
     "roo-memorybank-mcp": {
       "command": "bunx",
-      "args": ["@pnocera/roo-memorybank-mcp"],
+      "args": ["roo-memorybank-mcp"],
       "env": {},
       "transportType": "stdio",
       "autoApprove": [
@@ -201,4 +201,4 @@ This project is licensed under the Apache-2.0 License - see the [LICENSE](LICENS
 - 📖 [Documentation](./docs/)
 - 🐛 [Report Bug](https://github.com/IncomeStreamSurfer/roo-memorybank-mcp-server/issues)
 - 💡 [Request Feature](https://github.com/IncomeStreamSurfer/roo-memorybank-mcp-server/issues)
-- 📦 [NPM Package](https://www.npmjs.com/package/@pnocera/roo-memorybank-mcp)
+- 📦 [NPM Package](https://www.npmjs.com/package/roo-memorybank-mcp)

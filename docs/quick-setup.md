@@ -21,7 +21,7 @@ Simply add the server configuration to your MCP client - the package will be aut
   "mcpServers": {
     "roo-memorybank-mcp": {
       "command": "npx",
-      "args": ["@pnocera/roo-memorybank-mcp"],
+      "args": ["roo-memorybank-mcp"],
       "env": {},
       "transportType": "stdio",
       "autoApprove": [
@@ -43,7 +43,7 @@ Simply add the server configuration to your MCP client - the package will be aut
   "mcpServers": {
     "roo-memorybank-mcp": {
       "command": "bunx",
-      "args": ["@pnocera/roo-memorybank-mcp"],
+      "args": ["roo-memorybank-mcp"],
       "env": {},
       "transportType": "stdio",
       "autoApprove": [
