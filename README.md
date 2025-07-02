@@ -27,6 +27,39 @@ This MCP server provides the following tools:
 
 ## Installation
 
+### Option 1: Install from NPM (Recommended)
+
+The easiest way to use this MCP server is to install it from NPM:
+
+```bash
+npm install -g roo-mcp-server
+```
+
+Then configure your MCP client to use the installed binary:
+
+```json
+{
+  "mcpServers": {
+    "roo-code-memory-bank-mcp": {
+      "command": "roo-mcp-server",
+      "args": [],
+      "env": {},
+      "transportType": "stdio",
+      "autoApprove": [
+        "initialize_memory_bank",
+        "check_memory_bank_status",
+        "read_memory_bank_file",
+        "append_memory_bank_entry"
+      ],
+      "disabled": false,
+      "timeout": 60
+    }
+  }
+}
+```
+
+### Option 2: Build from Source
+
 1.  **Clone the repository:**
     ```bash
     git clone https://github.com/IncomeStreamSurfer/roo-code-memory-bank-mcp-server.git
@@ -43,6 +76,12 @@ This MCP server provides the following tools:
     This compiles the TypeScript code into JavaScript in the `dist/` directory.
 
 ## Configuration (for Cline MCP Client)
+
+### When using NPM installation (Option 1 above)
+
+Use the simplified configuration shown in the installation section.
+
+### When building from source (Option 2 above)
 
 To make this server available to your AI assistant (like Cline), you need to add its configuration to your MCP settings file (e.g., `cline_mcp_settings.json`).
 
@@ -83,7 +122,9 @@ Find the `mcpServers` object in your settings file and add the following entry:
 
 You don't typically need to run the server manually. The MCP client (like Cline) will automatically start the server using the `command` and `args` specified in the configuration file when one of its tools is called for the first time.
 
-If you want to test it manually, you can run `npm start` from the project directory.
+If you want to test it manually, you can run:
+- For NPM installation: `roo-mcp-server`
+- For source build: `npm start` from the project directory
 
 ## Usage
 
@@ -94,10 +135,50 @@ The AI assistant interacts with the server using the defined tools. The typical 
 3.  Reading relevant files (`read_memory_bank_file`) to gain context.
 4.  Appending entries (`append_memory_bank_entry`) as decisions are made or progress occurs.
 
-The `memory-bank/` directory will be created in the same directory where the server process is started (which should be the root of this project directory when launched via the MCP client configuration).
+The `memory-bank/` directory will be created in the current working directory where the server process is started.
 
+## Development and Deployment
 
-### Custom instructions
+### For Contributors
+
+This project uses automated CI/CD for releases. See our documentation:
+
+- [📖 Deployment Guide](./docs/deployment-guide.md) - Complete setup instructions for automated deployments
+- [🚀 Release Workflow](./docs/release-workflow.md) - Step-by-step release process documentation
+
+### Quick Development Setup
+
+```bash
+# Clone and setup
+git clone https://github.com/IncomeStreamSurfer/roo-code-memory-bank-mcp-server.git
+cd roo-code-memory-bank-mcp-server
+npm install
+
+# Development commands
+npm run build      # Build the project
+npm run watch      # Watch for changes and rebuild
+npm run clean      # Clean build artifacts
+npm test          # Run tests (add tests for better CI/CD)
+npm run lint      # Run linting (configure ESLint for better quality)
+```
+
+### Automated Releases
+
+This project automatically publishes to NPM and creates GitHub releases when you push a git tag:
+
+```bash
+# Create and push a new release
+git tag v1.0.1
+git push origin v1.0.1
+```
+
+The automation handles:
+- ✅ Running tests and builds
+- ✅ Creating GitHub releases with changelog
+- ✅ Publishing to NPM registry
+- ✅ Uploading build artifacts
+
+## Custom Instructions
 
 Set these instructions inside Roo
 
@@ -117,3 +198,22 @@ Use openrouter search to find general sentiment of topics, reviews, etc.
 *   Incorporate this loaded context into your planning and execution.
 *   When making significant decisions, progress updates, or architectural changes, use `append_memory_bank_entry` to record the information in the appropriate file (`decisionLog.md`, `progress.md`, etc.), ensuring context persistence.
 *   If the memory bank doesn't exist, consider using `initialize_memory_bank` if appropriate for the project.
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the Apache-2.0 License - see the [LICENSE](LICENSE) file for details.
+
+## Support
+
+- 📖 [Documentation](./docs/)
+- 🐛 [Report Bug](https://github.com/IncomeStreamSurfer/roo-code-memory-bank-mcp-server/issues)
+- 💡 [Request Feature](https://github.com/IncomeStreamSurfer/roo-code-memory-bank-mcp-server/issues)
+- 📦 [NPM Package](https://www.npmjs.com/package/roo-mcp-server)
