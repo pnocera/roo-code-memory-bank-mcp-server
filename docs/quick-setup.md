@@ -19,9 +19,9 @@ Simply add the server configuration to your MCP client - the package will be aut
 ```json
 {
   "mcpServers": {
-    "roo-code-memory-bank-mcp": {
+    "roo-memorybank-mcp": {
       "command": "npx",
-      "args": ["roo-mcp-server"],
+      "args": ["@pnocera/roo-memorybank-mcp"],
       "env": {},
       "transportType": "stdio",
       "autoApprove": [
@@ -41,9 +41,9 @@ Simply add the server configuration to your MCP client - the package will be aut
 ```json
 {
   "mcpServers": {
-    "roo-code-memory-bank-mcp": {
+    "roo-memorybank-mcp": {
       "command": "bunx",
-      "args": ["roo-mcp-server"],
+      "args": ["@pnocera/roo-memorybank-mcp"],
       "env": {},
       "transportType": "stdio",
       "autoApprove": [
@@ -99,8 +99,8 @@ bun install -g roo-mcp-server
 ```json
 {
   "mcpServers": {
-    "roo-code-memory-bank-mcp": {
-      "command": "roo-mcp-server",
+    "roo-memorybank-mcp": {
+      "command": "roo-memorybank-mcp",
       "args": [],
       "env": {},
       "transportType": "stdio",
@@ -200,7 +200,7 @@ If you encounter issues:
 1. **Check the logs**: Most MCP clients show logs in their developer tools
 2. **Test manually**: Run `npx roo-mcp-server` or `bunx roo-mcp-server` in terminal to check for errors
 3. **Verify package**: Check that the package exists at [npmjs.com/package/roo-mcp-server](https://www.npmjs.com/package/roo-mcp-server)
-4. **Open an issue**: [Report bugs here](https://github.com/IncomeStreamSurfer/roo-code-memory-bank-mcp-server/issues)
+4. **Open an issue**: [Report bugs here](https://github.com/IncomeStreamSurfer/roo-memorybank-mcp-server/issues)
 
 ## 🎯 Next Steps
 

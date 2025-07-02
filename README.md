@@ -37,9 +37,9 @@ Add the following to your MCP client settings (e.g., `cline_mcp_settings.json`):
 ```json
 {
   "mcpServers": {
-    "roo-code-memory-bank-mcp": {
+    "roo-memorybank-mcp": {
       "command": "npx",
-      "args": ["roo-mcp-server"],
+      "args": ["@pnocera/roo-memorybank-mcp"],
       "env": {},
       "transportType": "stdio",
       "autoApprove": [
@@ -59,9 +59,9 @@ Add the following to your MCP client settings (e.g., `cline_mcp_settings.json`):
 ```json
 {
   "mcpServers": {
-    "roo-code-memory-bank-mcp": {
+    "roo-memorybank-mcp": {
       "command": "bunx",
-      "args": ["roo-mcp-server"],
+      "args": ["@pnocera/roo-memorybank-mcp"],
       "env": {},
       "transportType": "stdio",
       "autoApprove": [
@@ -89,8 +89,8 @@ Then use this simpler configuration:
 ```json
 {
   "mcpServers": {
-    "roo-code-memory-bank-mcp": {
-      "command": "roo-mcp-server",
+    "roo-memorybank-mcp": {
+      "command": "roo-memorybank-mcp",
       "args": [],
       "env": {},
       "transportType": "stdio",
@@ -135,8 +135,8 @@ This project uses automated CI/CD for releases. See our documentation:
 
 ```bash
 # Clone and setup
-git clone https://github.com/IncomeStreamSurfer/roo-code-memory-bank-mcp-server.git
-cd roo-code-memory-bank-mcp-server
+git clone https://github.com/IncomeStreamSurfer/roo-memorybank-mcp-server.git
+cd roo-memorybank-mcp-server
 npm install
 
 # Development commands
@@ -177,7 +177,7 @@ Use brave search mcp to find URLs to scrape
 Use fetch mcp with fetch_txt and fetch_markdown to find text and images on pages in order to convert into JSON files and create something in-depth
 Use openrouter search to find general sentiment of topics, reviews, etc.
 
-**Utilize the `roo-code-memory-bank-mcp` server to maintain project context:**
+**Utilize the `roo-memorybank-mcp` server to maintain project context:**
 *   At the start of a task or significant subtask, use `check_memory_bank_status`.
 *   If the memory bank exists (`exists: true`), use `read_memory_bank_file` for relevant files (e.g., `productContext.md`, `activeContext.md`) to load the current project context.
 *   Incorporate this loaded context into your planning and execution.
@@ -199,6 +199,6 @@ This project is licensed under the Apache-2.0 License - see the [LICENSE](LICENS
 ## Support
 
 - 📖 [Documentation](./docs/)
-- 🐛 [Report Bug](https://github.com/IncomeStreamSurfer/roo-code-memory-bank-mcp-server/issues)
-- 💡 [Request Feature](https://github.com/IncomeStreamSurfer/roo-code-memory-bank-mcp-server/issues)
-- 📦 [NPM Package](https://www.npmjs.com/package/roo-mcp-server)
+- 🐛 [Report Bug](https://github.com/IncomeStreamSurfer/roo-memorybank-mcp-server/issues)
+- 💡 [Request Feature](https://github.com/IncomeStreamSurfer/roo-memorybank-mcp-server/issues)
+- 📦 [NPM Package](https://www.npmjs.com/package/@pnocera/roo-memorybank-mcp)

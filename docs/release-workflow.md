@@ -95,7 +95,7 @@ Once triggered, the workflow automatically:
 ### 4. Post-Release Verification
 
 #### Verify GitHub Release
-1. Check [Releases page](https://github.com/IncomeStreamSurfer/roo-code-memory-bank-mcp-server/releases)
+1. Check [Releases page](https://github.com/IncomeStreamSurfer/roo-memorybank-mcp-server/releases)
 2. Confirm release notes are correct
 3. Verify artifacts are uploaded
 

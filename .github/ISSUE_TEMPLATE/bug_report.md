@@ -34,7 +34,7 @@ Please share your MCP server configuration (remove sensitive information):
 ```json
 {
   "mcpServers": {
-    "roo-code-memory-bank-mcp": {
+    "roo-memorybank-mcp": {
       // your configuration here
     }
   }

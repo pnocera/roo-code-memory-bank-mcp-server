@@ -130,7 +130,7 @@ For maintainers setting up the automation:
 
 ### For Users
 - [🚀 Quick Setup Guide](./quick-setup.md)
-- [🐛 Issue Tracker](https://github.com/IncomeStreamSurfer/roo-code-memory-bank-mcp-server/issues)
+- [🐛 Issue Tracker](https://github.com/IncomeStreamSurfer/roo-memorybank-mcp-server/issues)
 - [📦 NPM Package](https://www.npmjs.com/package/roo-mcp-server)
 
 ### For Contributors

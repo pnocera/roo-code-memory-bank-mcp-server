@@ -71,15 +71,15 @@ jobs:
 
       - name: Update package.json version
         run: |
-          # Only update if version is different
+          # Always update version from tag to ensure consistency
           CURRENT_VERSION=$(node -p "require('./package.json').version")
           TARGET_VERSION="${{ steps.version.outputs.clean_version }}"
-          if [ "$CURRENT_VERSION" != "$TARGET_VERSION" ]; then
-            npm version $TARGET_VERSION --no-git-tag-version
-            echo "Updated package.json version from $CURRENT_VERSION to $TARGET_VERSION"
-          else
-            echo "Package.json version is already $TARGET_VERSION, skipping update"
-          fi
+          echo "Current package.json version: $CURRENT_VERSION"
+          echo "Target version from tag: $TARGET_VERSION"
+          
+          # Update package.json version to match the tag (allow same version for consistency)
+          npm version $TARGET_VERSION --no-git-tag-version --allow-same-version
+          echo "Updated package.json version to $TARGET_VERSION"
 
       - name: Generate changelog
         id: changelog
