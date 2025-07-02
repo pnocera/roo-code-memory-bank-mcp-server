@@ -221,7 +221,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 async function runServer() {
   const transport = new StdioServerTransport();
   await server.connect(transport);
-  console.error(chalk.green("Roo Memory Bank MCP Server running on stdio"));
+  console.log(chalk.green("Roo Memory Bank MCP Server running on stdio"));
 }
 
 if (import.meta.url.startsWith('file:') && fileURLToPath(import.meta.url) === process.argv[1]) {
